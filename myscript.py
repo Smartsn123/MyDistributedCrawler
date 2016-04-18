@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup as BS
 import json
-
 import requests
+
 #NEED BOTO connection to push the function to the AWS EMR
 #NEED EBS connection object to write csv on server
 #NEED REDIS server object to logg onto AWS or local machine
@@ -9,11 +9,14 @@ import requests
 
 link = "http://www.hm.com/us/products/ladies/dresses_jumpsuits"
 
-def crawler(link)
- r= requests.get()
+def scrape(link):
+ r= requests.get(link)
  soup = BS(r.text)
- prlist = soup.find_all('ul', {'class': 'products-list'})
- soup= prlist[0].find_all('li')
+ print soup 
+ prlist = soup.findAll('ul', {'class': 'products-list'})
+ print prlist
+ #soup= prlist[0].find_all('li')
+ res_list=[]
  for item in soup:
        # soup1 = BS(item)
         #print "#######################################"
@@ -77,10 +80,13 @@ def crawler(link)
         #print json.dumps(prod,indent=4)
         #print prod['details']
         #print len(prlist)
-        
+        res_list.append(prod)
+ print prod
+ print ##################################
+ return res_list
 
-
-crawler(link)
+link1 = "http://www.hm.com/us/products/search?categories=ladies&term=gingham%20shirts"
+scrape(link1)
 
 '''
 Category//
