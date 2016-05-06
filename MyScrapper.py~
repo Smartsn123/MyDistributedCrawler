@@ -20,6 +20,7 @@ except :
 
 
 ##############################################connection to the AWS SQS anfd S3###########################################
+sqs=''; queue='';s3='';inp='';bucket='';obj='';
 try:
  sqs = boto3.client('sqs')
  queue = sqs.get_queue_by_name(QueueName='my_queue')
@@ -54,7 +55,7 @@ def update_reader_pos(mark):
    msgs[0].delete()
    response = queue.send_messages(Entries=[{'Id': '1', 'MessageBody': str(mark) }])
     # Print out any failures
-    print(response.get('Failed'))
+   print(response.get('Failed'))
    
    
 
@@ -73,7 +74,8 @@ def check_for_domain(st , query):
       return 0
       
       
-def save_to_db(items_list):
+#def save_to_db(items_list):
+
       
       
 
@@ -107,9 +109,9 @@ def  scrape_controller(domain):
             #in case none of the domain
             if  not check_for_domain("categories=men",search_q)  and  not check_for_domain("categories=ladies",search_q)  and   not check_for_domain("categories=kids",search_q)  and  not heck_for_domain("categories=sale",search_q)  :
                   search_q =  domain+"&"+search_q
-             incase given domain
+             #incase given domain
             elif check_for_domain(domain,search_q) : 
-                     print --
+                     print" --"
             #incase of no doamin
             else :
                   continue
