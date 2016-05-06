@@ -1,45 +1,35 @@
 from bs4 import BeautifulSoup as BS
 import json
-import requests
+import json
+import urllib2
 
-#NEED BOTO connection to push the function to the AWS EMR
-#NEED EBS connection object to write csv on server
-#NEED REDIS server object to logg onto AWS or local machine
-#NEED fabric for deploying on AWS using authorization id and secret key
-
-link = "http://www.hm.com/us/products/ladies/dresses_jumpsuits"
-
+#utility to scrape all the items listed on page hm.com 
 def scrape(link):
- r= requests.get(link)
- soup = BS(r.text)
- print soup 
- prlist = soup.findAll('ul', {'class': 'products-list'})
- print prlist
- #soup= prlist[0].find_all('li')
+ page = urllib2.urlopen(link)
+ soup = BS(page.read())
+ prlist = soup.find('ul', {'class': 'products-list'})
+ #print len(prlist)
+ prlist = prlist. findAll('li')
  res_list=[]
- for item in soup:
-       # soup1 = BS(item)
-        #print "#######################################"
-        
-        item_id="";   category="";item_name="";  size="";   color=""; 
-        pattern=""; item_pic="" ; price="" ;    item_link="";
-        
+ i=0
+ for item in prlist:
+        #print str(i)+"########################################################################"
+        #i+=1
+        #print item
         prod={}     
-        
         #item picture  
         try: 
             tmp =    item.find_all('div' , {'class' : 'image'})[0]
             item_pic = tmp.find_all('img')[0]['src']
             prod['item_pic'] = 'http:'+item_pic
-            #print "item_pic   ",(prod['item_pic'])
         except :
             pass
             
         #item link
         try: 
-            tmp =    item.find_all('div')[0]
-            prod['item_link'] = tmp.find_all('a')[0]['href'] 
-            prod['item_id']  = prod['item_link'].split("article=")[1] 
+           
+            prod['item_url'] = item.find_all('a')[0]['href'] 
+            prod['item_id']  = prod['item_url'].split("article=")[1] 
             #print "item_id   ",(prod['item_id'])  
             #print "item_link   ",(prod['item_link'])  
         except :
@@ -49,7 +39,7 @@ def scrape(link):
         try :
            #print item.find_all('a')[0]
            prod['item_name']= item.find_all('a')[0]['title']
-           print "item_name  ",(prod['item_name'])
+           #print "item_name  ",(prod['item_name'])
         except :
             pass
             
@@ -57,7 +47,7 @@ def scrape(link):
         try : 
            info = item.find_all('div',{'class' : 'product-info'})[0]
            #print info
-           prod['details']=info.findAll("div", {"class": "details"})[0].string.strip(" ")
+           #prod['pattern']=info.findAll("div", {"class": "details"})[0].string.strip(" ")
            prod['price'] = info.findAll("div", {"class": "price"})[0].findAll('span')[0].string.strip(" ")
            #print "item_details  ",(prod['details']) 
            #print "item_price  ",prod['price']
@@ -66,7 +56,6 @@ def scrape(link):
             
         try : 
            clrs = item.find_all('ul',{'class' : 'colours'})[0]
-           
            clrs1= clrs.findAll('li')[0].findAll('div')[0]['style'].split('(')[1] 
            prod['color']=clrs1.split(')')[0]
            #print clrs1
@@ -77,16 +66,15 @@ def scrape(link):
         
         
         
-        #print json.dumps(prod,indent=4)
-        #print prod['details']
-        #print len(prlist)
-        res_list.append(prod)
- print prod
- print ##################################
+        if 'item_name' in prod.keys():
+            res_list.append(prod)
+            #print json.dumps(prod, indent=4)
+   
+ #print len(res_list)     
  return res_list
 
-link1 = "http://www.hm.com/us/products/search?categories=ladies&term=gingham%20shirts"
-scrape(link1)
+#link1 = "http://www.hm.com/us/products/search?categories=ladies&term=gingham%20shirts"
+#scrape(link1)
 
 '''
 Category//
